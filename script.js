@@ -75,7 +75,7 @@ function init() {
   let index = 0;
   for (let y = 0, y2 = textCoordinates.height; y < y2; y++) {
     for (let x = 0, x2 = textCoordinates.width; x < x2; x++) {
-      // Check pixel opacity is more than 50%
+      // Check if the opacity value of a pixel is more than 50%
       if (textCoordinates.data[index + 3] > 128) {
         const positionX = (x + adjustX) * 15;
         const positionY = (y + adjustY) * 15;
