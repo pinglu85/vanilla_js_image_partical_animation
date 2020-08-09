@@ -1,4 +1,4 @@
-const canvas = document.getElementById('canvas1');
+const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -72,16 +72,16 @@ class Particle {
 }
 
 function init() {
+  let index = 0;
   for (let y = 0, y2 = textCoordinates.height; y < y2; y++) {
     for (let x = 0, x2 = textCoordinates.width; x < x2; x++) {
       // Check pixel opacity is more than 50%
-      if (
-        textCoordinates.data[y * 4 * textCoordinates.width + x * 4 + 3] > 128
-      ) {
+      if (textCoordinates.data[index + 3] > 128) {
         const positionX = (x + adjustX) * 15;
         const positionY = (y + adjustY) * 15;
         particles.push(new Particle(positionX, positionY));
       }
+      index += 4;
     }
   }
 }
