@@ -1,16 +1,20 @@
+const PARTICLE_OFFSET = 9;
+const ADJUST_X = -10;
+const ADJUST_Y = -10;
+const CONNECT_DISTANCE = 20;
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const image = document.getElementById('source');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 const particles = [];
-const adjustX = 2;
-const adjustY = -5;
 
 // handle mouse
 const mouse = {
   x: null,
   y: null,
-  radius: 250,
+  radius: 150,
 };
 
 window.addEventListener('mousemove', function (event) {
@@ -18,11 +22,17 @@ window.addEventListener('mousemove', function (event) {
   mouse.y = event.y;
 });
 
-ctx.fillStyle = 'white';
-ctx.font = '30px Verdana';
-ctx.fillText('YEAH', 0, 30);
-// Scan the underlying pixel data of the text area
-const textCoordinates = ctx.getImageData(0, 0, 100, 100);
+// Configure CORS access
+image.crossOrigin = 'anonymous';
+// Listen for image load
+image.addEventListener('load', init);
+
+// Draw text on canvas
+// ctx.fillStyle = 'white';
+// ctx.font = '30px Verdana';
+// ctx.fillText('YEAH', 0, 30);
+// // Scan the underlying pixel data of the text area
+// const textCoordinates = ctx.getImageData(0, 0, 100, 100);
 
 class Particle {
   constructor(x, y) {
@@ -72,20 +82,25 @@ class Particle {
 }
 
 function init() {
+  // Draw image onto the canvas
+  ctx.drawImage(image, 0, 0, 2836, 3088, 0, 0, 100, 109);
+  // Scan the underlying pixel data of the image area
+  const textCoordinates = ctx.getImageData(0, 0, 100, 109);
+
   let index = 0;
   for (let y = 0, y2 = textCoordinates.height; y < y2; y++) {
     for (let x = 0, x2 = textCoordinates.width; x < x2; x++) {
       // Check if the opacity value of a pixel is more than 50%
       if (textCoordinates.data[index + 3] > 128) {
-        const positionX = (x + adjustX) * 15;
-        const positionY = (y + adjustY) * 15;
+        const positionX = (x + ADJUST_X) * PARTICLE_OFFSET;
+        const positionY = (y + ADJUST_Y) * PARTICLE_OFFSET;
         particles.push(new Particle(positionX, positionY));
       }
       index += 4;
     }
   }
 }
-init();
+// init();
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -106,7 +121,7 @@ function connect() {
       const dy = particles[a].y - particles[b].y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (distance < 40) {
+      if (distance < CONNECT_DISTANCE) {
         opacity = 1 - distance / 50;
         ctx.strokeStyle = particles[b].color;
         ctx.globalAlpha = opacity;
